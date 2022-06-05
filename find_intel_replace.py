@@ -4,7 +4,7 @@ import itertools
 import sys
 import argparse
 
-parser = argparse.ArgumentParser(description="Detect and optionally patch a binary compiled with Intel compiler or MKL for usage on AMD or other non-Intel systems.")
+parser = argparse.ArgumentParser(description="Detect and optionally patch a binary compiled with Intel compiler or MKL for usage on AMD systems.")
 parser.add_argument('--force',action ='store_true', help="Use this switch to actually modify file, otherwise it only checks for cpu dispatch code")
 parser.add_argument('filename',help="A binary file (e.g. *.exe, *.dll etc.)")
 if len(sys.argv)==1:
