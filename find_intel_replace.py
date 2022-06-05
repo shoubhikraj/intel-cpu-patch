@@ -6,7 +6,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description="Detect and optionally patch a binary compiled with Intel compiler or MKL for usage on AMD or other non-Intel systems.")
 parser.add_argument('--force',action ='store_true', help="Use this switch to actually modify file, otherwise it only checks for cpu dispatch code")
-parser.add_argument('filename',help="A binary file (*.exe, *.dll)")
+parser.add_argument('filename',help="A binary file (e.g. *.exe, *.dll etc.)")
 if len(sys.argv)==1:
     print("No arguments given!")
     parser.print_usage()
@@ -17,14 +17,25 @@ args = parser.parse_args()
 target_file = args.filename
 edit_file = args.force
 
-
-# this part checks the file extension
-file_ext = target_file[-4:]
-if (file_ext != ".exe") and (file_ext != ".dll"):
-    print("Error! You should only modify binary files with this.")
-    print("Your input file does not seem like a binary file i.e. *.exe or *.dll.")
+#first check if file is binary or text
+#https://stackoverflow.com/questions/898669/how-can-i-detect-if-a-file-is-binary-non-text-in-python
+textchars = bytearray({7,8,9,10,12,13,27} | set(range(0x20, 0x100)) - {0x7f})
+is_binary_string = lambda bytes: bool(bytes.translate(None, textchars))
+with open(target_file,'rb') as check_fh:
+    is_binary = is_binary_string(check_fh.read(1024))
+if not is_binary:
+    print("Error! The file does not seem to be a binary.")
     print("Exiting...")
     sys.exit(1)
+
+# this part checks the file extension (only on Windows)
+if sys.platform.startswith('win32'):
+    file_ext = target_file[-4:]
+    if (file_ext != ".exe") and (file_ext != ".dll") and (file_ext != ".lib"):
+        print("Error! You should only modify binary files with this.")
+        print("Your input file does not have the extension of a binary file i.e. *.exe, *.dll or *.lib.")
+        print("Exiting...")
+        sys.exit(1)
 # file extension check ends
 
 intel_cpuid_strs = [b'Genu',b'ineI',b'ntel']
