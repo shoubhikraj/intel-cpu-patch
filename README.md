@@ -14,7 +14,7 @@ To do the modification:
 python find_intel_replace.py myfile.exe --force
 ```
 
-## Background
+### Background
 
 Intel C/C++ and Fortran compilers have an option `/Qax` (Windows) or `-ax` (Linux) which introduces multiple dispatch versions of computationally heavy functions where SIMD (e.g. AVX, AVX2, FMA, AVX-512) can be used. Unfortunately, the dispatcher only works correctly for Intel processors. If you have a different processor e.g. AMD, the dispatcher will always use the slowest codepath, even if AVX or AVX2 is available.
 
